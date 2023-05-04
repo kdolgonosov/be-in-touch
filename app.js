@@ -12,7 +12,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 mongoose
-    .connect('mongodb+srv://admin:admin@be-in-touch.skwcigu.mongodb.net/?retryWrites=true&w=majority')
+    .connect(
+        'mongodb+srv://admin:admin@be-in-touch.skwcigu.mongodb.net/?retryWrites=true&w=majority',
+    )
     .then(() => console.log('db is okay'))
     .catch((err) => console.log('db err', err));
 
@@ -26,3 +28,5 @@ app.use('/', require('./routes'));
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порте: ${PORT}`);
 });
+
+module.exports = app;
