@@ -19,7 +19,10 @@ mongoose
     .catch((err) => console.log('db err', err));
 
 // app.use(requestLogger);
-app.use('/', require('./routes'));
+app.get('/', (req, res) => {
+    res.send('Express on Vercel');
+});
+// app.use('/', require('./routes'));
 
 // app.use(errorLogger);
 // app.use(errors());
