@@ -12,9 +12,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 mongoose
-    .connect(
-        'mongodb+srv://admin:admin@be-in-touch.skwcigu.mongodb.net/?retryWrites=true&w=majority',
-    )
+    // .connect(
+    //     'mongodb+srv://admin:admin@be-in-touch.skwcigu.mongodb.net/?retryWrites=true&w=majority',
+    // )
+    .connect(process.env.MONGODB_URI)
     .then(() => console.log('db is okay'))
     .catch((err) => console.log('db err', err));
 
