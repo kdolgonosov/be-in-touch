@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 mongoose
     .connect(
         'mongodb+srv://admin:admin@be-in-touch.skwcigu.mongodb.net/?retryWrites=true&w=majority',
+        { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true },
     )
     .then(() => console.log('db is okay'))
     .catch((err) => console.log('db err', err));
