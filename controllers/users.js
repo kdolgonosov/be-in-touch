@@ -10,7 +10,7 @@ const ServerError = require('../errors/serverError');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.createUser = (req, res, next) => {
-    const { email, password, name } = req.body;
+    const { email, password, name, surname, age, city, university, avatar } = req.body;
     bcrypt
         .hash(password, 10)
         .then((hash) =>
@@ -18,6 +18,11 @@ module.exports.createUser = (req, res, next) => {
                 email,
                 password: hash,
                 name,
+                surname,
+                age,
+                city,
+                university,
+                avatar,
             }),
         )
         .then((user) => {
@@ -55,6 +60,40 @@ module.exports.signIn = (req, res, next) => {
         .catch(() => next(new BadTokenError('Неверные почта или пароль')));
 };
 
+module.exports.followUser = (req, res, next) => {
+    const _id = req.user._id;
+    const { id } = req.body;
+    User.findByIdAndUpdate(_id, { $push: { friends: [id] } }, { new: true })
+        .then((user) => {
+            res.send(user);
+        })
+        .catch((err) => {
+            if (err.name === 'ValidationError') {
+                return next(new ValidationError());
+            }
+            if (err.code === 11000) {
+                return next(new NotUniqueEmailError());
+            }
+            return next(new ServerError());
+        });
+};
+module.exports.unFollowUser = (req, res, next) => {
+    const _id = req.user._id;
+    const { id } = req.body;
+    User.findByIdAndUpdate(_id, { $pull: { friends: { $eq: id } } }, { new: true })
+        .then((user) => {
+            res.send(user);
+        })
+        .catch((err) => {
+            if (err.name === 'ValidationError') {
+                return next(new ValidationError());
+            }
+            if (err.code === 11000) {
+                return next(new NotUniqueEmailError());
+            }
+            return next(new ServerError());
+        });
+};
 module.exports.getUserInfo = (req, res, next) => {
     const id = req.user._id;
     User.findById(id).then((user) => {
@@ -62,20 +101,77 @@ module.exports.getUserInfo = (req, res, next) => {
             return next(new NotFoundError());
         }
         return res.send({
+            _id: user._id,
             email: user.email,
             name: user.name,
+            surname: user.surname,
+            age: user.age,
+            city: user.city,
+            university: user.university,
+            avatar: user.avatar,
+            friends: user.friends,
         });
+    });
+};
+module.exports.getUserById = (req, res, next) => {
+    User.findById(req.params.userId)
+        .then((user) =>
+            res.send({
+                _id: user._id,
+                email: user.email,
+                name: user.name,
+                surname: user.surname,
+                age: user.age,
+                city: user.city,
+                university: user.university,
+                avatar: user.avatar,
+                friends: user.friends,
+            }),
+        )
+        .catch(() => {
+            next(new ServerError());
+        });
+};
+module.exports.getAllUsers = (req, res, next) => {
+    User.find({}).then((userList) => {
+        if (!userList) {
+            return next(new NotFoundError());
+        }
+        return res.send(userList);
+    });
+};
+
+module.exports.getFriends = (req, res, next) => {
+    const id = req.user._id;
+    User.findById(id).then((user) => {
+        User.find()
+            .where('_id')
+            .in(user.friends)
+            .then((userList) => {
+                if (!userList) {
+                    return next(new NotFoundError());
+                }
+                return res.send(userList);
+            });
     });
 };
 
 module.exports.updateUserInfo = (req, res, next) => {
     const id = req.user._id;
-    const { email, name } = req.body;
-    User.findByIdAndUpdate(id, { email, name }, { new: true, runValidators: true })
+    const { name, surname, age, city, university, avatar } = req.body;
+    User.findByIdAndUpdate(
+        id,
+        { name, surname, age, city, university, avatar },
+        { new: true, runValidators: true },
+    )
         .then((user) => {
             res.send({
-                email: user.email,
                 name: user.name,
+                surname: user.surname,
+                age: user.age,
+                city: user.city,
+                university: user.university,
+                avatar: user.avatar,
                 _id: user._id,
             });
         })

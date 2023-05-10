@@ -20,30 +20,28 @@ const userSchema = new mongoose.Schema({
         minlength: 2,
         maxlength: 30,
     },
-    // новые
     surname: {
         type: String,
-        // required: true,
+        required: true,
         minlength: 2,
         maxlength: 30,
     },
     age: {
-        type: Number,
-        // required: true,
-        // minlength: 2,
-        // maxlength: 30,
+        type: String,
     },
     city: {
         type: String,
-        // required: true,
+        required: true,
         minlength: 2,
         maxlength: 30,
     },
     university: {
         type: String,
-        // required: true,
         minlength: 2,
         maxlength: 30,
+    },
+    avatar: {
+        type: String,
     },
     friends: {
         type: [mongoose.Schema.Types.ObjectId],
