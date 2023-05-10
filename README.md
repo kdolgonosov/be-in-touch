@@ -11,6 +11,7 @@ npm run dev
 
 ## Стек:
 
+- Node.js
 - Express
 - Mongoose
 - JWT
