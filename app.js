@@ -11,8 +11,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 mongoose
-    .connect(process.env.MONGODB_URI)
-    // .connect(process.env.DB_URL)
+    // .connect(process.env.MONGODB_URI)
+    .connect(process.env.DB_URL)
     .then(() => console.log('db is okay'))
     .catch((err) => console.log('db err', err));
 
